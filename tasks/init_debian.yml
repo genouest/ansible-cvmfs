@@ -20,7 +20,6 @@
     signed_by: https://cvmrepo.web.cern.ch/cvmrepo/apt/cernvm.gpg
     state: present
     enabled: true
-  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'bookworm'
  
 # Install CernVM-FS packages and dependencies 
 - name: Install CernVM-FS packages and dependencies (apt)
