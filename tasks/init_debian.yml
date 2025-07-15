@@ -5,33 +5,6 @@
       - apt-transport-https
       - ca-certificates
 
-- name: Install CernVM apt key
-  ansible.builtin.apt_key:
-    url: https://cvmrepo.web.cern.ch/cvmrepo/apt/cernvm.gpg
-
-- name: Configure CernVM apt repository
-  ansible.builtin.apt_repository:
-    filename: cernvm.list
-    mode: 422
-    repo: deb [allow-insecure=true] https://cvmrepo.web.cern.ch/cvmrepo/apt/ {{ ansible_distribution_release }}-prod main
-  when: ansible_distribution != 'Ubuntu or Debian' 
-
-- name: Configure CernVM apt repository
-  ansible.builtin.apt_repository:
-    filename: cernvm.list
-    mode: 422
-    repo: deb [allow-insecure=true] https://cvmrepo.web.cern.ch/cvmrepo/apt/ {{ ansible_distribution_release }}-prod main
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release in ('bionic', 'xenial', 'precise', 'focal', 'jammy', 'noble')
-
-# There are no packages for any of the non LTS versions so good
-# luck and have fun if that's you.
-- name: Configure CernVM apt repository
-  ansible.builtin.apt_repository:
-    filename: cernvm.list
-    mode: 422
-    repo: deb [allow-insecure=true] https://cvmrepo.web.cern.ch/cvmrepo/apt/ xenial-prod main
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release not in ('bionic', 'xenial', 'precise', 'focal', 'jammy', 'noble')
-
 # This is the Debian 12 (bookworm) specific repository configuration
 # It uses the deb822_repository module to ensure compatibility with the Debian 12 repository format.
 # It is only applied when the distribution is Debian and the release is bookworm.
