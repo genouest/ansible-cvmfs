@@ -14,7 +14,7 @@
     filename: cernvm.list
     mode: 422
     repo: deb [allow-insecure=true] https://cvmrepo.web.cern.ch/cvmrepo/apt/ {{ ansible_distribution_release }}-prod main
-  when: ansible_distribution != 'Ubuntu'
+  when: ansible_distribution != 'Ubuntu or Debian' 
 
 - name: Configure CernVM apt repository
   ansible.builtin.apt_repository:
@@ -32,6 +32,24 @@
     repo: deb [allow-insecure=true] https://cvmrepo.web.cern.ch/cvmrepo/apt/ xenial-prod main
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_release not in ('bionic', 'xenial', 'precise', 'focal', 'jammy', 'noble')
 
+# This is the Debian 12 (bookworm) specific repository configuration
+# It uses the deb822_repository module to ensure compatibility with the Debian 12 repository format.
+# It is only applied when the distribution is Debian and the release is bookworm.
+#  deb822_repository is new in ansible-core 2.15
+- name: Configure CernVM apt repository
+  ansible.builtin.deb822_repository:
+    name: cernvm
+    types: [deb]
+    uris: "https://cvmrepo.web.cern.ch/cvmrepo/apt"
+    suites: "{{ ansible_distribution_release }}-prod"
+    components:
+      - main
+    signed_by: https://cvmrepo.web.cern.ch/cvmrepo/apt/cernvm.gpg
+    state: present
+    enabled: true
+    when: ansible_distribution == 'Debian' and ansible_distribution_release == 'bookworm'
+ 
+# Install CernVM-FS packages and dependencies 
 - name: Install CernVM-FS packages and dependencies (apt)
   ansible.builtin.apt:
     name: "{{ cvmfs_packages[_cvmfs_role] }}"
